@@ -3,31 +3,39 @@ import ReactDOM from 'react-dom';
 // import React from "react";
 // import handleSignInClick from './signup';
 import Signin from "./signin";
-import { useContext } from "react";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import InputControl from './InputControl/InputControl';
 import { auth } from "../firebase";
-import { useNavigate } from "react-router-dom";
-import {AuthContext} from "../context/AuthContext"
+import styles from "./Signup.module.css";
 
 function SignupPage() {
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const {dispatch} = useContext(AuthContext)
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    // Handle form submission here
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        // Signed in
-        const user = userCredential.user;
-        console.log(user)
-        dispatch({type:"LOGIN", payload:user})
+
+  const [values, setValues] = useState({
+    name: "",
+    email: "",
+    pass: "",
+  });
+  const [errorMsg, setErrorMsg] = useState("");
+  const [submitButtonDisabled, setSubmitButtonDisabled] = useState(false);
+  const handleSubmission = () => {
+    if (!values.name || !values.email || !values.pass) {
+      setErrorMsg("Fill all fields");
+      return;
+    }
+    setErrorMsg("");
+
+    setSubmitButtonDisabled(true);
+    createUserWithEmailAndPassword(auth, values.email, values.pass)
+      .then(async (res) => {
+        setSubmitButtonDisabled(false);
+        const user = res.user;
+        await updateProfile(user, {
+          displayName: values.name,
+        });
       })
-      .catch((error) => {
-        'this is error';
+      .catch((err) => {
+        setSubmitButtonDisabled(false);
+        setErrorMsg(err.message);
       });
   };
 
@@ -38,37 +46,69 @@ function SignupPage() {
       <h1 className='text-3xl font-bold mr-4 sm:text-4xl text-center ' style={{backgroundImage: 'linear-gradient(to right, #66BB6A, #42A5F5, #7e22ce)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent'}}>
   GymGenie
 </h1>
-        <h2 className="text-3xl font-bold mb-8 text-center my-3">Sign up for an account</h2>
-        <form onSubmit={handleSubmit}>
-        <p className='text-center'>Have an account already? <a href="#" style={{ color: 'blue' }} onClick={() => ReactDOM.render(<Signin/>,document.getElementById('root'))}>Sign in</a></p>
+<h2 className="text-3xl font-bold mb-8 text-center my-3">Sign up for an account</h2>
+
+<p className='text-center'>Have an account already? <a href="#" style={{ color: 'blue' }} onClick={() => ReactDOM.render(<Signin/>,document.getElementById('root'))}>Sign in</a></p>
         <div className="mb-4">
             <div>
-              <label htmlFor="firstName" className="block font-medium text-gray-700 mb-2">First Name</label>
-              <input type="text" id="firstName" className="border border-black rounded-md px-4 py-2 w-full" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+            <InputControl
+          label="First Name"
+          placeholder="Enter your name"
+          onChange={(event) =>
+            setValues((prev) => ({ ...prev, name: event.target.value }))
+          }
+        />
             </div>
+
+          <div>
+            <InputControl
+          label="Last Name"
+          placeholder="Enter your name"
+        />
+            </div>  
+          
             <div>
-              <label htmlFor="lastName" className="block font-medium text-gray-700 mb-2">Last Name</label>
-              <input type="text" id="lastName" className="border border-black rounded-md px-4 py-2 w-full" value={lastName} onChange={(e) => setLastName(e.target.value)} />
+            <InputControl
+          label="Email"
+          placeholder="Enter email address"
+          onChange={(event) =>
+            setValues((prev) => ({ ...prev, email: event.target.value }))
+          }
+        />
             </div>
           </div>
-          <div className="mb-4">
-            <label htmlFor="email" className="block font-medium text-gray-700 mb-2">Email</label>
-            <input type="email" id="email" className="border border-black rounded-md px-4 py-2 w-full" value={email} onChange={(e) => setEmail(e.target.value)} />
+          <div className="mb-0">
+          <InputControl
+          label="Password"
+          placeholder="Enter password"
+          onChange={(event) =>
+            setValues((prev) => ({ ...prev, pass: event.target.value }))
+          }
+        />
+        <div>
+            <InputControl
+          label="Confirm Password"
+          placeholder="Enter password"
+        />
+            </div>
+        
           </div>
-          <div className="mb-4">
-            <label htmlFor="password" className="block font-medium text-gray-700 mb-2">Password</label>
-            <input type="password" id="password" className="border border-black rounded-md px-4 py-2 w-full" value={password} onChange={(e) => setPassword(e.target.value)} />
-          </div>
-          <div className="mb-4">
-            <label htmlFor="confirmPassword" className="block font-medium text-gray-700 mb-2">Confirm Password</label>
-            <input type="password" id="confirmPassword" className="border  border-black rounded-md px-4 py-2 w-full" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
-          </div>
-          <button type="submit" className="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700">Sign Up</button>
-          <p>By signing up you agree to our <a href="https://www.privacyboard.co/company/gymgenie" style={{ textDecoration: 'underline' }}>privacy policy</a></p>
-        </form>
+          
+          <div className={styles.footer}>
+          <b className={styles.error}>{errorMsg}</b>
+          <button onClick={handleSubmission} disabled={submitButtonDisabled}>
+            Signup
+          </button>
+          <p>
+            Already have an account?{" "}
+            <a href="#" style={{ color: 'blue' }} onClick={() => ReactDOM.render(<Signin/>,document.getElementById('root'))}>Sign In</a>
+          </p>
+        </div>
+        
       </div>
     </div>
     </div>
+    
   );
 }
 
