@@ -1,3 +1,9 @@
+# Deployed on following links:
+gym-genie-rho.vercel.app
+gym-genie-git-master-medhavisingh.vercel.app
+gym-genie-medhavisingh.vercel.app
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
