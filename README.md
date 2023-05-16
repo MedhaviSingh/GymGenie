@@ -1,7 +1,6 @@
 # Deployed on following links:
-gym-genie-rho.vercel.app
-gym-genie-git-master-medhavisingh.vercel.app
-gym-genie-medhavisingh.vercel.app
+https://gym-genie-git-master-medhavisingh.vercel.app/
+https://gym-genie-medhavisingh.vercel.app/
 
 
 # Getting Started with Create React App
