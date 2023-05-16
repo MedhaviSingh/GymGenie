@@ -1,5 +1,5 @@
 # Deployed on following links:
-https://gym-genie-git-master-medhavisingh.vercel.app/    .\
+https://gym-genie-git-master-medhavisingh.vercel.app/    \
 https://gym-genie-medhavisingh.vercel.app/
 
 
